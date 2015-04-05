@@ -1,14 +1,16 @@
 'use-strict';
 
 //  Request handler object for /games
+var querystring = require('querystring');
+var gameDS = (require('../datastore/datastore.js'))().games;
+console.log(gameDS);
 
 var gamesHandlers = {};
 
 //  /games/create?name=""&description=""&publisher=""
 gamesHandlers.create = function gamesHandlersCreate(urlData, request, response) {
-    response.writeHead(200, {'Content-Type':'text/plain'});
-    response.write('Create game handler called successfully!');
-    response.end();
+    var params = querystring.parse(urlData.query);
+    gameDS.create(params, response);
 };
 gamesHandlers.create.methods = { 'POST':'TRUE' };
 

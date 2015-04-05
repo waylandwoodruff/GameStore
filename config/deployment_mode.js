@@ -14,6 +14,7 @@ function serverGlobals(deploymentMode) {
             default:
                 datamodel = require('../datastore/localModel.js');
         }
+        console.log('Initializing datastore...');
         datamodel.initialize();
     }
     

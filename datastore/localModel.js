@@ -43,8 +43,7 @@ function dualStackQueue() {
             isOutputEmpty();
             return;
         }
-        
-        if (typeof dqOp === 'function') dqOp(output.pop(), callback);
+        if (typeof this.dqOp === 'function') this.dqOp(output.pop(), callback);
         isOutputEmpty();
     };
     this.dequeue = this.Dq;
@@ -65,6 +64,9 @@ function semaphore() {
         inUse = true;
         taskQ.Dq(function() { inUse = false; });
         setTimeout(semaphoreIterFunc, 0);
+    };
+    this.addDqOp = function semaphoreAddDqOp(dqFunc) {
+        taskQ.dqOp = dqFunc;
     };
     this.addTask = function semaphoreAddTask(task, callback) {
         taskQ.Nq(task, callback);
@@ -98,7 +100,7 @@ function semaphoreQueueDqOp(task, callback) {
 };
 
 for (key in semaphores) {
-    semaphores[key].dqOp = semaphoreQueueDqOp;
+    semaphores[key].addDqOp(semaphoreQueueDqOp);
 }
 
 function initializeLocalModel() {
@@ -109,23 +111,40 @@ function initializeLocalModel() {
             fd = fs.openSync(datasets[i], 'wx+');
             fs.appendFileSync(datasets[i], initJSON[datasets[i]]);
             fs.closeSync(fd);
-        } catch(e) { /* File exists already -- do nothing */ }
+        } catch(e) { console.log(e); }
     }
 };
 
 var game = {};
-game.create = function localGameCreate(name, description, publisher) {
-    function task() {
+game.create = function localGameCreate(newGame, response) {
+    function task(callback) {
         fs.readFile(datasets[0], 'utf8', function(error, data) {
             if (error) {
                 console.log(error);
+                response.writeHead(500, {'Content-Type':'text/plain'});
+                response.write('Could not access database!');
+                response.end();
                 return;
             }
             var filedata = JSON.parse(data);
-            filedata[name] = { 'name':name,'description':description,'publisher':publisher};
+            if (filedata[newGame.name]) {
+                response.writeHead(403, {'Content-Type':'text/plain'});
+                response.write('Game already exists in database!');
+                response.end();
+                return;
+            }
+            filedata[newGame.name] = newGame;
             fs.writeFile(datasets[0], JSON.stringify(filedata), 'utf8', function(error) {
                 if (error) {
                     console.log(error);
+                    response.writeHead(500, {'Content-Type':'text/plain'});
+                    response.write('Could not create game!');
+                    response.end();
+                } else {
+                    if (typeof callback === 'function') callback();
+                    response.writeHead(200, {'Content-Type':'text/plain'});
+                    response.write('Create game handler called successfully!');
+                    response.end();
                 }
             });
         });
