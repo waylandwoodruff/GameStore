@@ -3,8 +3,8 @@
 var gamesHandler = require('../handlers/games.js');
 var routes = {
     "/games/create" : gamesHandler.create,
-    "/games/update" : gamesHandler.update,
-    "/games/get"    : gamesHandler.getAll
+    "/games/get"    : gamesHandler.get,
+    "/games/update" : gamesHandler.update
 };
 
 function gamesRouter(urlData, request, response) {

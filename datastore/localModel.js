@@ -111,40 +111,42 @@ function initializeLocalModel() {
             fd = fs.openSync(datasets[i], 'wx+');
             fs.appendFileSync(datasets[i], initJSON[datasets[i]]);
             fs.closeSync(fd);
-        } catch(e) { console.log(e); }
+        } catch(e) { if (e.code !== 'EEXIST') console.log(e); }
     }
+};
+
+function writeResponse(res, code, content, resText) {
+    res.writeHead(code, content);
+    res.write(resText);
+    res.end();
 };
 
 var game = {};
 game.create = function localGameCreate(newGame, response) {
     function task(callback) {
+        var cbIsFunc = typeof callback === 'function';
         fs.readFile(datasets[0], 'utf8', function(error, data) {
             if (error) {
+                if (cbIsFunc) callback();
                 console.log(error);
-                response.writeHead(500, {'Content-Type':'text/plain'});
-                response.write('Could not access database!');
-                response.end();
+                writeResponse(response, 500, {'Content-Type':'text/plain'}, 'Could not access database!');
                 return;
             }
             var filedata = JSON.parse(data);
-            if (filedata[newGame.name]) {
-                response.writeHead(403, {'Content-Type':'text/plain'});
-                response.write('Game already exists in database!');
-                response.end();
+            var gameName = newGame.name.toLowerCase();
+            if (filedata[gameName]) {
+                if (cbIsFunc) callback();
+                writeResponse(response, 403, {'Content-Type':'text/plain'}, 'Game already exists in database!');
                 return;
             }
-            filedata[newGame.name] = newGame;
+            filedata[gameName] = newGame;
             fs.writeFile(datasets[0], JSON.stringify(filedata), 'utf8', function(error) {
+                if (cbIsFunc) callback();
                 if (error) {
                     console.log(error);
-                    response.writeHead(500, {'Content-Type':'text/plain'});
-                    response.write('Could not create game!');
-                    response.end();
+                    writeResponse(response, 500, {'Content-Type':'text/plain'}, 'Could not create game!');
                 } else {
-                    if (typeof callback === 'function') callback();
-                    response.writeHead(200, {'Content-Type':'text/plain'});
-                    response.write('Create game handler called successfully!');
-                    response.end();
+                    writeResponse(response, 201, {'Content-Type':'text/plain'}, 'Successfully created game.');
                 }
             });
         });
@@ -152,7 +154,31 @@ game.create = function localGameCreate(newGame, response) {
     task.fileResource = datasets[0];
     operationQueue.games.enqueue(task);
 };
-game.get = function localGameGet(name) {};
+
+game.get = function localGameGet(name, response) {
+    function task(callback) {
+        var cbIsFunc = typeof callback === 'function';
+        fs.readFile(datasets[0], 'utf8', function(error, data) {
+            if (error) {
+                if (cbIsFunc) callback();
+                console.log(error);
+                writeResponse(response, 500, {'Content-Type':'text/plain'}, 'Could not access database!');
+                return;
+            }
+            var gameIndex = data.indexOf('"' + name.toLowerCase() + '":{');
+            if (gameIndex < 0) {
+                if (cbIsFunc) callback();
+                writeResponse(response, 404, {'Content-Type':'text/plain'}, 'Game not found.');
+                return;
+            }
+            var gameJSON = data.slice(data.indexOf('{', gameIndex), (1 + data.indexOf('}', gameIndex)));
+            if (cbIsFunc) callback();
+            writeResponse(response, 200, {'Content-Type':'application/json'}, gameJSON);
+        });
+    };
+    task.fileResource = datasets[0];
+    operationQueue.games.enqueue(task);
+};
 game.update = function localGameUpdate(name, updates) {
     //  updates is expected to be an object where keys are metadata names
 };
