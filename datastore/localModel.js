@@ -10,14 +10,14 @@ var datasets = [
 ];
 var initJSON = {
     'datastore/localData/games.json'    : '{}',
-    'datastore/localData/comments.json' : '{"comments":[]}'
+    'datastore/localData/comments.json' : '{"gameComments":{},"lastCommentID":0}'
 };
 var operationQueue = {
     'games'    : new dualStackQueue(),
     'comments' : new dualStackQueue()
 };
 var semaphores = {};
-for (var idx = 0; idx < datasets.length; idx++) {
+for (idx = 0; idx < datasets.length; idx++) {
     semaphores[datasets[idx]] = new semaphore();
 }
 
@@ -85,7 +85,7 @@ function operationQueueDqOp(task, callback) {
     }
 };
 
-for (var key in operationQueue) {
+for (key in operationQueue) {
     operationQueue[key].dqOp = operationQueueDqOp;
 }
 
@@ -147,7 +147,13 @@ comments.create = function localCommentsCreate(game, comment) {
                 return;
             }
             var filedata = JSON.parse(data);
-            filedata[game] = { 'name':name,'description':description,'publisher':publisher};
+            if (!filedata.gameComments[game]) {
+                filedata.gameComments[game] = [];
+            }
+            filedata.lastCommentID++;
+            comment.id = filedata.lastCommentID;
+            comment.timestamp = +((new Date()).getTime());
+            filedata.gameComments[game].push(comment);
             fs.writeFile(datasets[1], JSON.stringify(filedata), 'utf8', function(error) {
                 if (error) {
                     console.log(error);
