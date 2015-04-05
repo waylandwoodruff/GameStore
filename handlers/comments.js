@@ -8,7 +8,7 @@ commentsHandlers.create = function commentsHandlersCreate(urlData, request, resp
     response.write('Create comment handler called successfully!');
     response.end();
 };
-commentsHandlers.create.methods = { 'POST':'TRUE', 'GET':'TRUE' };
+commentsHandlers.create.methods = { 'POST':'TRUE' };
 
 //  /comments/delete
 commentsHandlers.destroy = function commentsHandlersDestroy(urlData, request, response) {
@@ -16,7 +16,7 @@ commentsHandlers.destroy = function commentsHandlersDestroy(urlData, request, re
     response.write('Destroy handler called successfully!');
     response.end();
 };
-commentsHandlers.destroy.methods = { 'DELETE':'TRUE', 'GET':'TRUE' };
+commentsHandlers.destroy.methods = { 'DELETE':'TRUE' };
 
 //  /comments/get
 commentsHandlers.get = function commentsHandlersGet(urlData, request, response) {
@@ -32,6 +32,6 @@ commentsHandlers.update = function commentsHandlersUpdate(urlData, request, resp
     response.write('Update comment handler called successfully!');
     response.end();
 };
-commentsHandlers.update.methods = { 'PUT':'TRUE', 'GET':'TRUE' };
+commentsHandlers.update.methods = { 'PUT':'TRUE' };
 
 module.exports = commentsHandlers;

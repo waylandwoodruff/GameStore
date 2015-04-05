@@ -3,22 +3,22 @@
 var http = require('http');
 var url = require('url');
 
-function configureServer(deploymentMode) {
+var datamodel;
+var start;
+
+function serverGlobals(deploymentMode) {
     var port = 8888;    //  default port
     
-    switch (deploymentMode) {
-        case 'LOCAL':
-            break;
-        case 'AZURE':
-            break;
-        default:
-            console.log('ERROR! Deployment mode ' + deploymentMode + ' not recognized!');
-            console.log('Defaulting to localhost deployment...');
-            deploymentMode = 'LOCAL';
+    if (!datamodel || typeof datamodel !== 'object') {
+        switch (deploymentMode) {
+            default:
+                datamodel = require('../datastore/localModel.js');
+        }
+        datamodel.initialize();
     }
     
-    return {
-        'start':function startServer(router) {
+    if (typeof start !== 'function') {
+        start = function startServer(router) {
             function onRequest(request, response) {
                 router(url.parse(request.url), request, response);
             };
@@ -26,7 +26,12 @@ function configureServer(deploymentMode) {
             http.createServer(onRequest).listen(port);
             console.log('Server has started. Listening on port: ' + port);
         }
+    }
+    
+    return {
+        'datamodel' : datamodel,
+        'start'     : start
     };
 };
 
-module.exports = configureServer;
+module.exports = serverGlobals;
