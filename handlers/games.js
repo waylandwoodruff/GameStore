@@ -22,9 +22,8 @@ gamesHandlers.get.methods = { 'GET':'TRUE' };
 
 //  /games/update?name=""&newname=""&newdescription=""&newpublisher="" => only requires one of last 3 attributes
 gamesHandlers.update = function gamesHandlersUpdate(urlData, request, response) {
-    response.writeHead(200, {'Content-Type':'text/plain'});
-    response.write('Update game handler called successfully!');
-    response.end();
+    var params = querystring.parse(urlData.query);
+    gameDS.update(params.name, params, response);
 };
 gamesHandlers.update.methods = { 'PUT':'TRUE' };
 

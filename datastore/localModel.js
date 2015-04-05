@@ -154,7 +154,6 @@ game.create = function localGameCreate(newGame, response) {
     task.fileResource = datasets[0];
     operationQueue.games.enqueue(task);
 };
-
 game.get = function localGameGet(name, response) {
     function task(callback) {
         var cbIsFunc = typeof callback === 'function';
@@ -179,8 +178,51 @@ game.get = function localGameGet(name, response) {
     task.fileResource = datasets[0];
     operationQueue.games.enqueue(task);
 };
-game.update = function localGameUpdate(name, updates) {
-    //  updates is expected to be an object where keys are metadata names
+game.update = function localGameUpdate(gameName, updates, response) {
+    function task(callback) {
+        var cbIsFunc = typeof callback === 'function';
+        fs.readFile(datasets[0], 'utf8', function(error, data) {
+            if (error) {
+                if (cbIsFunc) callback();
+                console.log(error);
+                writeResponse(response, 500, {'Content-Type':'text/plain'}, 'Could not access database!');
+                return;
+            }
+            var filedata = JSON.parse(data);
+            gameName = gameName.toLowerCase();
+            if (!filedata[gameName]) {
+                if (cbIsFunc) callback();
+                writeResponse(response, 404, {'Content-Type':'text/plain'}, 'Game not found!');
+                return;
+            }
+            if (updates.newname && typeof updates.newname === 'string') {
+                var newname = updates.newname.toLowerCase();
+                if (newname !== gameName) {
+                    filedata[newname] = filedata[gameName];
+                    delete filedata[gameName];
+                    gameName = newname;
+                }
+                filedata[gameName].name = updates.newname;
+            }
+            if (updates.newdescription && typeof updates.newdescription === 'string') {
+                filedata[gameName].description = updates.newdescription;
+            }
+            if (updates.newpublisher && typeof updates.newpublisher === 'string') {
+                filedata[gameName].publisher = updates.newpublisher;
+            }
+            fs.writeFile(datasets[0], JSON.stringify(filedata), 'utf8', function(error) {
+                if (cbIsFunc) callback();
+                if (error) {
+                    console.log(error);
+                    writeResponse(response, 500, {'Content-Type':'text/plain'}, 'Could not create game!');
+                } else {
+                    writeResponse(response, 200, {'Content-Type':'text/plain'}, 'Successfully updated game.');
+                }
+            });
+        });
+    };
+    task.fileResource = datasets[0];
+    operationQueue.games.enqueue(task);
 };
 
 var comments = {};
