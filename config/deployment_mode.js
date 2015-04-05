@@ -20,7 +20,7 @@ function configureServer(deploymentMode) {
     return {
         'start':function startServer(router) {
             function onRequest(request, response) {
-                router(url.parse(request.url), request, response);      //  TODO: CURRENTLY DOES NOTHING!!!! Remedy that!
+                router(url.parse(request.url), request, response);
             };
             
             http.createServer(onRequest).listen(port);

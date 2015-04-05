@@ -1,10 +1,11 @@
 'use-strict';
 
-var gamesHandler = require('../handlers/games.js');
+var commentsHandler = require('../handlers/comments.js');
 var routes = {
-    "/games/create" : gamesHandler.create,
-    "/games/update" : gamesHandler.update,
-    "/games/get"    : gamesHandler.getAll
+    "/comments/create" : commentsHandler.create,
+    "/comments/delete" : commentsHandler.destroy,
+    "/comments/get"    : commentsHandler.get,
+    "/comments/update" : commentsHandler.update
 };
 
 function gamesRouter(urlData, request, response) {

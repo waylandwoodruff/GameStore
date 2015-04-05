@@ -4,7 +4,7 @@
 
 var gamesHandlers = {};
 
-//  /games/create-game?name=""&description=""&publisher=""
+//  /games/create?name=""&description=""&publisher=""
 gamesHandlers.create = function gamesHandlersCreate(urlData, request, response) {
     response.writeHead(200, {'Content-Type':'text/plain'});
     response.write('Create game handler called successfully!');
@@ -12,8 +12,8 @@ gamesHandlers.create = function gamesHandlersCreate(urlData, request, response) 
 };
 gamesHandlers.create.methods = { 'POST':'TRUE' };
 
-//  /games/get-all/
-gamesHandlers.getAll = function gamesHandlersGetAll(urlData, request, response) {
+//  /games/get/
+gamesHandlers.getAll = function gamesHandlersGet(urlData, request, response) {
     response.writeHead(200, {'Content-Type':'text/plain'});
     response.write('Get all handler called successfully!');
     response.end();

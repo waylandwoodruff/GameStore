@@ -2,7 +2,8 @@
 
 var routes = {
     '/':require('../routers/defaultRouter.js'),
-    '/games':require('../routers/gamesRouter.js')
+    '/games':require('../routers/gamesRouter.js'),
+    '/comments':require('../routers/commentsRouter.js')
 };
 
 function routeRequest(urlData, request, response) {
