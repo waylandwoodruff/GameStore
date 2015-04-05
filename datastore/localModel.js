@@ -8,6 +8,10 @@ var datasets = [
     'datastore/localData/games.json',
     'datastore/localData/comments.json'
 ];
+var initJSON = {
+    'datastore/localData/games.json'    : '{}',
+    'datastore/localData/comments.json' : '{"comments":[]}'
+};
 var operationQueue = {
     'games'    : new dualStackQueue(),
     'comments' : new dualStackQueue()
@@ -99,12 +103,11 @@ for (key in semaphores) {
 
 function initializeLocalModel() {
     //  Synchronous for initialization only
-    var emptyJSON = '{\n}';
     var fd;
     for (var i = 0; i < datasets.length; i++) {
         try {
             fd = fs.openSync(datasets[i], 'wx+');
-            fs.appendFileSync(datasets[i], emptyJSON);
+            fs.appendFileSync(datasets[i], initJSON[datasets[i]]);
             fs.closeSync(fd);
         } catch(e) { /* File exists already -- do nothing */ }
     }
@@ -144,7 +147,7 @@ comments.create = function localCommentsCreate(game, comment) {
                 return;
             }
             var filedata = JSON.parse(data);
-            filedata[name] = { 'name':name,'description':description,'publisher':publisher};
+            filedata[game] = { 'name':name,'description':description,'publisher':publisher};
             fs.writeFile(datasets[1], JSON.stringify(filedata), 'utf8', function(error) {
                 if (error) {
                     console.log(error);
