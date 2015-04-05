@@ -18,13 +18,9 @@ function configureServer(deploymentMode) {
     }
     
     return {
-        'start':function startServer(route) {
+        'start':function startServer(router) {
             function onRequest(request, response) {
-                route(url.parse(request.url));      //  TODO: CURRENTLY DOES NOTHING!!!! Remedy that!
-                
-                response.writeHead( 200, {'Content-Type':'text/plain'});
-                response.write('Hello world!');
-                response.end();
+                router(url.parse(request.url), response);      //  TODO: CURRENTLY DOES NOTHING!!!! Remedy that!
             };
             
             http.createServer(onRequest).listen(port);
