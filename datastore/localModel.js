@@ -109,6 +109,12 @@ for (key in semaphores) {
 function initializeLocalModel() {
     //  Synchronous for initialization only
     var fd;
+    console.log('Initializing datastore...');
+    try {
+        fs.mkdirSync('datastore/localData', '666');
+    } catch(e) {
+        console.log(e);
+    }
     for (var i = 0; i < datasets.length; i++) {
         try {
             fd = fs.openSync(datasets[i], 'wx+');
@@ -155,20 +161,18 @@ game.get = function localGameGet(name, response) {
     function task(callback) {
         var cbIsFunc = typeof callback === 'function';
         fs.readFile(datasets[0], 'utf8', function(error, data) {
+            if (cbIsFunc) callback();
             if (error) {
-                if (cbIsFunc) callback();
                 console.log(error);
                 writeResponse(response, 500, {'Content-Type':'text/plain'}, 'Could not access database!');
                 return;
             }
             var gameIndex = data.indexOf('"' + name.toLowerCase() + '":{');
             if (gameIndex < 0) {
-                if (cbIsFunc) callback();
                 writeResponse(response, 404, {'Content-Type':'text/plain'}, 'Game not found.');
                 return;
             }
             var gameJSON = data.slice(data.indexOf('{', gameIndex), (1 + data.indexOf('}', gameIndex)));
-            if (cbIsFunc) callback();
             writeResponse(response, 200, {'Content-Type':'application/json'}, gameJSON);
         });
     };
@@ -316,7 +320,44 @@ comments.remove = function localCommentsRemove(game, id, response) {
     task.fileResource = datasets[1];
     operationQueue.comments.enqueue(task);
 };
-comments.update = function localCommentsUpdate(game, updates, response) {};
+comments.update = function localCommentsUpdate(game, updates, response) {
+    function task(callback) {
+        var cbIsFunc = typeof callback === 'function';
+        fs.readFile(datasets[1], 'utf8', function(error, data) {
+            if (error) {
+                if (cbIsFunc) callback();
+                console.log(error);
+                writeResponse(response, 500, {'Content-Type':'text/plain'}, 'Could not access database!');
+                return;
+            }
+            var filedata = JSON.parse(data);
+            if (!filedata.gameComments[game]) {
+                if (cbIsFunc) callback();
+                writeResponse(response, 404, {'Content-Type':'text/plain'}, 'Game title not found!');
+                return;
+            }
+            var commentIdx = binarySearch(filedata.gameComments[game], updates.id, 'id');
+            if (commentIdx < 0) {
+                if (cbIsFunc) callback();
+                writeResponse(response, 404, {'Content-Type':'text/plain'}, 'Comment not found for this game!');
+                return;
+            }
+            filedata.gameComments[game][commentIdx].content = updates.newcontent;
+            
+            fs.writeFile(datasets[1], JSON.stringify(filedata), 'utf8', function(error) {
+                if (cbIsFunc) callback();
+                if (error) {
+                    console.log(error);
+                    writeResponse(response, 500, {'Content-Type':'text/plain'}, 'Could not update database!');
+                } else {
+                    writeResponse(response, 200, {'Content-Type':'text/plain'}, 'Successfully updated comment.');
+                }
+            });
+        });
+    };
+    task.fileResource = datasets[1];
+    operationQueue.comments.enqueue(task);
+};
 
 var search = {};
 

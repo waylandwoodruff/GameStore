@@ -36,10 +36,15 @@ commentsHandlers.remove = function commentsHandlersRemove(urlData, request, resp
 };
 commentsHandlers.remove.methods = { 'DELETE':'TRUE' };
 
-//  /comments/<game name>/update?id=#&newcontent
+//  /comments/<game name>/update?id=#&newcontent=""
 commentsHandlers.update = function commentsHandlersUpdate(urlData, request, response) {
     var params = querystring.parse(urlData.query);
-    commentDS.update(params, response);
+    if (!params.id || typeof params.newcontent !== 'string') {
+        writeResponse(response, 400, {'Content-Type':'text/plain'}, 'Bad request');
+        return;
+    }
+    params.id = +params.id;
+    commentDS.update(urlData.gameName, params, response);
 };
 commentsHandlers.update.methods = { 'PUT':'TRUE' };
 
