@@ -10,7 +10,6 @@ var routes = {
 function gamesRouter(urlData, request, response) {
     var pathname = urlData.pathname;
     if (pathname[pathname.length-1] === '/') pathname = pathname.slice(0, -1);
-    console.log(request.method + ' :: ' + pathname);
     
     if (typeof routes[pathname] === 'function') {
         if (routes[pathname].methods[request.method] === 'TRUE') {
