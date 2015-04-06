@@ -38,7 +38,11 @@ function strToRegex(str) {
     
     var regList = str.split(/\s/);
     for (var i = 0; i < regList.length; i++) {
-        regList[i] = new RegExp(regList[i], 'i');
+        if (regList[i].length > 2) {
+            regList[i] = new RegExp(regList[i], 'i');
+        } else {
+            regList.splice(i, 1);
+        }
     }
     return regList;
 };
