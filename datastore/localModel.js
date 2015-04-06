@@ -1,7 +1,9 @@
 'use-strict';
 
 var fs = require('fs');
-var writeResponse = require('../util/utility.js').writeResponse;
+var utility = require('../util/utility.js');
+var binarySearch = utility.arrBinarySearch;
+var writeResponse = utility.writeResponse;
 
 var idx = 0;
 var key = null;
@@ -258,7 +260,44 @@ comments.create = function localCommentsCreate(game, comment, response) {
     operationQueue.comments.enqueue(task);
 };
 comments.getByGame = function localCommentsGetByGame(game, response) {};
-comments.remove = function localCommentsRemove(game, response) {};
+comments.remove = function localCommentsRemove(game, id, response) {
+    function task(callback) {
+        var cbIsFunc = typeof callback === 'function';
+        fs.readFile(datasets[1], 'utf8', function(error, data) {
+            if (error) {
+                if (cbIsFunc) callback();
+                console.log(error);
+                writeResponse(response, 500, {'Content-Type':'text/plain'}, 'Could not access database!');
+                return;
+            }
+            var filedata = JSON.parse(data);
+            if (!filedata.gameComments[game]) {
+                if (cbIsFunc) callback();
+                writeResponse(response, 404, {'Content-Type':'text/plain'}, 'Game title not found!');
+                return;
+            }
+            var commentIdx = binarySearch(filedata.gameComments[game], id, 'id');
+            if (commentIdx < 0) {
+                if (cbIsFunc) callback();
+                writeResponse(response, 404, {'Content-Type':'text/plain'}, 'Comment not found for this game!');
+                return;
+            }
+            filedata.gameComments[game].splice(commentIdx, 1);
+            
+            fs.writeFile(datasets[1], JSON.stringify(filedata), 'utf8', function(error) {
+                if (cbIsFunc) callback();
+                if (error) {
+                    console.log(error);
+                    writeResponse(response, 500, {'Content-Type':'text/plain'}, 'Could not write changes to database!');
+                } else {
+                    writeResponse(response, 200, {'Content-Type':'text/plain'}, 'Successfully deleted comment.');
+                }
+            });
+        });
+    };
+    task.fileResource = datasets[1];
+    operationQueue.comments.enqueue(task);
+};
 comments.update = function localCommentsUpdate(game, updates, response) {};
 
 var search = {};

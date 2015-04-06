@@ -18,24 +18,29 @@ commentsHandlers.create = function commentsHandlersCreate(urlData, request, resp
 };
 commentsHandlers.create.methods = { 'POST':'TRUE' };
 
-//  /comments/<game name>/delete?id=#
-commentsHandlers.remove = function commentsHandlersRemove(urlData, request, response) {
-    var params = querystring.parse(urlData.query);
-    commentDS.create(params, response);
-};
-commentsHandlers.remove.methods = { 'DELETE':'TRUE' };
-
 //  /comments/<game name>/get
 commentsHandlers.get = function commentsHandlersGet(urlData, request, response) {
     var params = querystring.parse(urlData.query);
-    commentDS.create(params, response);
+    commentDS.get(params, response);
 };
 commentsHandlers.get.methods = { 'GET':'TRUE' };
+
+//  /comments/<game name>/delete?id=#
+commentsHandlers.remove = function commentsHandlersRemove(urlData, request, response) {
+    var params = querystring.parse(urlData.query);
+    if (!params.id) {
+        writeResponse(response, 400, {'Content-Type':'text/plain'}, 'Bad request');
+        return;
+    }
+    params.id = +params.id;
+    commentDS.remove(urlData.gameName, params.id, response);
+};
+commentsHandlers.remove.methods = { 'DELETE':'TRUE' };
 
 //  /comments/<game name>/update?id=#&newcontent
 commentsHandlers.update = function commentsHandlersUpdate(urlData, request, response) {
     var params = querystring.parse(urlData.query);
-    commentDS.create(params, response);
+    commentDS.update(params, response);
 };
 commentsHandlers.update.methods = { 'PUT':'TRUE' };
 
