@@ -112,9 +112,7 @@ function initializeLocalModel() {
     console.log('Initializing datastore...');
     try {
         fs.mkdirSync('datastore/localData', '666');
-    } catch(e) {
-        console.log(e);
-    }
+    } catch(e) { if (e.code !== 'EEXIST') console.log(e); }
     for (var i = 0; i < datasets.length; i++) {
         try {
             fd = fs.openSync(datasets[i], 'wx+');
@@ -275,7 +273,7 @@ comments.getByGame = function localCommentsGetByGame(game, response) {
             }
             var jsonBuffer = '{"comments":';
             var gameIdx = data.indexOf('"' + game + '":');
-            jsonBuffer += (gameIdx > 0) ? (data.slice((gameIdx + game.length + 3), (data.indexOf(']},') + 1)) + '}') : '[]}';
+            jsonBuffer += (gameIdx > 0) ? (data.slice((gameIdx + game.length + 3), (data.indexOf('"}]', gameIdx) + 3)) + '}') : '[]}';
             writeResponse(response, 200, {'Content-Type':'application/json'}, jsonBuffer);
         });
     };

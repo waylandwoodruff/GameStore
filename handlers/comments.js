@@ -7,14 +7,20 @@ var writeResponse = require('../util/utility.js').writeResponse;
 
 var commentsHandlers = {};
 
-//  /comments/<game name>/create?username=""&content=""
+//  /comments/<game name>/create?username=""
 commentsHandlers.create = function commentsHandlersCreate(urlData, request, response) {
     var params = querystring.parse(urlData.query);
-    if (typeof params.username !== 'string' || typeof params.content !== 'string') {
+    if (!params.username) {
         writeResponse(response, 400, {'Content-Type':'text/plain'}, 'Bad request');
         return;
     }
-    commentDS.create(urlData.gameName, params, response);
+    params.content = '';
+    request.on('data', function(datachunk) {
+        params.content += datachunk;
+    });
+    request.on('end', function() {
+        commentDS.create(urlData.gameName, params, response);
+    });
 };
 commentsHandlers.create.methods = { 'POST':'TRUE' };
 
@@ -36,15 +42,21 @@ commentsHandlers.remove = function commentsHandlersRemove(urlData, request, resp
 };
 commentsHandlers.remove.methods = { 'DELETE':'TRUE' };
 
-//  /comments/<game name>/update?id=#&newcontent=""
+//  /comments/<game name>/update?id=#
 commentsHandlers.update = function commentsHandlersUpdate(urlData, request, response) {
     var params = querystring.parse(urlData.query);
-    if (!params.id || typeof params.newcontent !== 'string') {
+    if (!params.id) {
         writeResponse(response, 400, {'Content-Type':'text/plain'}, 'Bad request');
         return;
     }
     params.id = +params.id;
-    commentDS.update(urlData.gameName, params, response);
+    params.newcontent = '';
+    request.on('data', function(datachunk) {
+        params.newcontent += datachunk;
+    });
+    request.on('end', function() {
+        commentDS.update(urlData.gameName, params, response);
+    });
 };
 commentsHandlers.update.methods = { 'PUT':'TRUE' };
 

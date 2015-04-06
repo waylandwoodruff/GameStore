@@ -12,7 +12,6 @@ var routes = {
 
 function commentsRouter(urlData, request, response) {
     var pathname = urlData.pathname;
-    console.log(request.method + ' :: ' + pathname);
     var endGameName = pathname.indexOf('/', 10);
     if (endGameName < 0) {
         writeResponse(response, 400, {'Content-Type':'text/plain'}, 'Bad request');
