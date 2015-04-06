@@ -15,12 +15,19 @@ var searchHandlers = {};
 searchHandlers.gameSearch = function searchHandlersGameSearch(urlData, request, response) {
     var params = querystring.parse(urlData.query);
     if (!params.q) {
+        writeResponse(response, 200, {'Content-Type':'application/json'}, '{results:[]}');
+        return;
+    }
+    params.name = (params.name !== undefined) ? +params.name : 0;
+    params.desc = (params.desc !== undefined) ? +params.desc : 0;
+    params.publisher = (params.publisher !== undefined) +params.publisher : 0;
+    if (isNaN(params.name) || isNaN(params.desc) || isNaN(params.publisher)) {
         writeResponse(response, 400, {'Content-Type':'text/plain'}, 'Bad request');
         return;
     }
-    if (params.name !== undefined) params.name = +params.name;
-    if (params.desc !== undefined) params.desc = +params.desc;
-    if (params.publisher !== undefined) params.publisher = +params.publisher;
+    if (!params.name && !params.desc && !params.publisher) {
+        params.name = params.desc = params.publisher = 1;
+    }
     params.regexList = makeRegex(params.q);
     searchDS.gameSearch(params, response);
 };

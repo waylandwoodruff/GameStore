@@ -1,0 +1,298 @@
+
+
+######################################
+# CREATE A GAME                      #
+# /games/create?name=""&publisher="" #
+######################################
+curl -H "Content-Type: text/plain" -d "Batman: Arkham Asylum is a 2009 action-adventure video game based on the DC Comics superhero, Batman. It was developed by Rocksteady Studios and published by Eidos Interactive in conjunction with Warner Bros. Interactive Entertainment for the PlayStation 3 and Xbox 360 video game consoles, and Microsoft Windows. It was released worldwide for consoles, beginning in North America on August 25, 2009, with a Microsoft Windows version following on September 15." -X POST http://localhost:8888/games/create?name=Batman%3AArkham%20Asylum&publisher=Rocksteady%20Studios
+curl -H "Content-Type: text/plain" -d "Batman: Arkham City is a 2011 action-adventure video game developed by Rocksteady Studios and released by Warner Bros. Interactive Entertainment for the PlayStation 3 and Xbox 360 video game consoles, and Microsoft Windows. Based on the DC Comics superhero Batman, it is the sequel to the 2009 video game Batman: Arkham Asylum and the second installment in the Batman: Arkham series. It was released worldwide for consoles, beginning in North America on October 18, 2011, with a Microsoft Windows version following on November 22." -X POST http://localhost:8888/games/create?name=Batman%3AArkham%City&publisher=Rocksteady%20Studios
+curl -H "Content-Type: text/plain" -d "Hack ‘n’ Slash is a puzzle action game about hacking — reprogram object properties, hijack global variables, hack creature behavior, and even rewrite the game’s code. The only way to win is not to play... by the rules!" -X POST http://localhost:8888/games/create?name=Hack%20%27n%27%20Slash&publisher=Double%20Fine%20Productions
+curl -H "Content-Type: text/plain" -d "Fallout 3 is an action role-playing open world video game developed by Bethesda Game Studios, and is the third major installment in the Fallout series. The game was released in North America, Europe and Australia in October 2008, and in Japan in December 2008 for Microsoft Windows, PlayStation 3 and Xbox 360." -X POST http://localhost:8888/games/create?name=Fallout%203&publisher=Bethesda%20Game%20Studios
+curl -H "Content-Type: text/plain" -d "Fallout: New Vegas is a role-playing video game developed by Obsidian Entertainment and published by Bethesda Softworks. While New Vegas is not a direct sequel, it uses the same engine and style as Fallout 3. It was developed by a few of the employees who worked on previous Fallout games at Black Isle Studios, along with a larger number of new employees. It is set primarily in a post-apocalyptic Nevada, although some areas of California and Arizona are also visited." -X POST http://localhost:8888/games/create?name=Fallout%3A%20New%20Vegas&publisher=Bethesda%20Softworks
+curl -H "Content-Type: text/plain" -d "The Elder Scrolls V: Skyrim is an action role-playing video game developed by Bethesda Game Studios and published by Bethesda Softworks. It is the fifth installment in The Elder Scrolls action role-playing video game series, following The Elder Scrolls IV: Oblivion. Skyrim was released on November 11, 2011, for Microsoft Windows, PlayStation 3, and Xbox 360. Three downloadable content (DLC) add-ons were released—Dawnguard, Hearthfire, and Dragonborn—which were repackaged into The Elder Scrolls V: Skyrim Legendary Edition, which released on June 4, 2013." -X POST http://localhost:8888/games/create?name=The%20Elder%20Scrolls%20V%3A%20Skyrim&publisher=Bethesda%20Game%20Studios
+
+# ERRORS
+# Already exists
+curl -H "Content-Type: text/plain" -d "Batman: Arkham Asylum is a 2009 action-adventure video game based on the DC Comics superhero, Batman. It was developed by Rocksteady Studios and published by Eidos Interactive in conjunction with Warner Bros. Interactive Entertainment for the PlayStation 3 and Xbox 360 video game consoles, and Microsoft Windows. It was released worldwide for consoles, beginning in North America on August 25, 2009, with a Microsoft Windows version following on September 15." -X POST http://localhost:8888/games/create?name=Batman%3AArkham%20Asylum&publisher=Rocksteady%20Studios
+# No Name
+curl -H "Content-Type: text/plain" -d "This post shouldn't work!" -X POST http://localhost:8888/games/create?name=&publisher=ERRTEST
+# No Publisher
+curl -H "Content-Type: text/plain" -d "This post shouldn't work!" -X POST http://localhost:8888/games/create?name=ERRTEST&publisher=
+# No Description
+curl -H "Content-Type: text/plain" -X POST http://localhost:8888/games/create?name=ERRTEST&publisher=ERRTEST
+# Incorrect request method
+curl -H "Content-Type: text/plain" -d "This post shouldn't work!" -X GET http://localhost:8888/games/create?name=ERRTEST&publisher=ERRTEST
+curl -H "Content-Type: text/plain" -d "This post shouldn't work!" -X PUT http://localhost:8888/games/create?name=ERRTEST&publisher=ERRTEST
+curl -H "Content-Type: text/plain" -d "This post shouldn't work!" -X DELETE http://localhost:8888/games/create?name=ERRTEST&publisher=ERRTEST
+
+######################
+# GET GAME METADATA  #
+# /games/get?name="" #
+######################
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/games/get?name=Batman%3AArkham%20Asylum
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/games/get?name=Batman%3AArkham%20City
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/games/get?name=Hack%20%27n%27%20Slash
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/games/get?name=Fallout%203
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/games/get?name=Fallout%3A%20New%20Vegas
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/games/get?name=The%20Elder%20Scrolls%20V%3A%20Skyrim
+
+# ERRORS
+# Doesn't Exist
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/games/get?name=asdfasdfasdf
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/games/get?name=Batman%3AArkham%20Everything
+# No name
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/games/get?name=
+# Incorrect request method
+curl -H "Content-Type: text/plain" -X PUT http://localhost:8888/games/get?name=Fallout%203
+curl -H "Content-Type: text/plain" -X POST http://localhost:8888/games/get?name=Batman%3AArkham%20City
+curl -H "Content-Type: text/plain" -X DELETE http://localhost:8888/games/get?name=Hack%20%27n%27%20Slash
+
+####################################################
+# UPDATE GAME                                      #
+# /games/update?name=""&newname=""&newpublisher="" #
+####################################################
+# Change game name only
+curl -H "Content-Type: text/plain" -X PUT http://localhost:8888/games/create?name=Batman%3AArkham%20Asylum&newname=BatmanArkhamAsylum&newpublisher=
+curl -H "Content-Type: text/plain" -X PUT http://localhost:8888/games/create?name=Fallout%203&newname=Fallout%20the%20Third&newpublisher=
+# Change game description only
+curl -H "Content-Type: text/plain" -d "Travel the land of Skyrim, being a badass and makin' other people think Whoa, that guy's a badass!" -X PUT http://localhost:8888/games/create?name=The%20Elder%20Scrolls%20V%3A%20Skyrim&newname=&newpublisher=
+curl -H "Content-Type: text/plain" -d "Explore the wasteland and take a shot every time the game crashes!" -X PUT http://localhost:8888/games/create?name=Fallout%20the%20Third&newname=&newpublisher=
+# Change game publisher only
+curl -H "Content-Type: text/plain" -X PUT http://localhost:8888/games/create?name=Hack%20%27n%27%20Slash&newname=&newpublisher=Double-Fine
+curl -H "Content-Type: text/plain" -X PUT http://localhost:8888/games/create?name=Fallout%3A%20New%20Vegas&newname=&newpublisher=Bethesda%20Softcrashes
+# Change game name and description
+curl -H "Content-Type: text/plain" -d "You get a USB sword. You have to flip the turtles over." -X PUT http://localhost:8888/games/create?name=Hack%20%27n%27%20Slash&newname=Hack%20%27E%27%20Sack&newpublisher=
+# Change game name and publisher
+curl -H "Content-Type: text/plain" -X PUT http://localhost:8888/games/create?name=BatmanArkhamAsylum&newname=Batman%3AArkham%20Asylum&newpublisher=Warner%20Bros
+# Change game description and publisher
+curl -H "Content-Type: text/plain" -d "Because cordoning off parts of the biggest city in the world to become a playground prison is a thing. Still fun, though!" -X PUT http://localhost:8888/games/create?name=Batman%3AArkham%City&newname=&newpublisher=Warner%20Bros
+# Change all game metadata
+curl -H "Content-Type: text/plain" -d "You can blow up a CITY!" -X PUT http://localhost:8888/games/create?name=Fallout%20the%20Third&newname=Fallout%203&newpublisher=Bethesda%20Game%20Makers
+
+# ERRORS
+# Game doesn't exist
+curl -H "Content-Type: text/plain" -d "ERRTEST" -X PUT http://localhost:8888/games/create?name=The%20Legend%20of%20Zelda%3A%20Skyward%20Sword&newname=ERRTEST&newpublisher=ERRTEST
+# No game title specified
+curl -H "Content-Type: text/plain" -d "ERRTEST" -X PUT http://localhost:8888/games/create?name=&newname=ERRTEST&newpublisher=ERRTEST
+# Incorrect request method
+curl -H "Content-Type: text/plain" -d "ERRTEST" -X GET http://localhost:8888/games/create?name=Fallout%203&newname=ERRTEST&newpublisher=ERRTEST
+curl -H "Content-Type: text/plain" -d "ERRTEST" -X POST http://localhost:8888/games/create?name=Fallout%203&newname=ERRTEST&newpublisher=ERRTEST
+curl -H "Content-Type: text/plain" -d "ERRTEST" -X DELETE http://localhost:8888/games/create?name=Fallout%203&newname=ERRTEST&newpublisher=ERRTEST
+
+############################################
+# CREATE COMMENT                           #
+# /comments/<game name>/create?username="" #
+############################################
+curl -H "Content-Type: text/plain" -d "That city's toast!" -X POST http://localhost:8888/comments/Fallout%203/create?username=DestructOR
+curl -H "Content-Type: text/plain" -d "The combat's a lot of fun, but the dialogue :| oh, catwoman, you shambling mass of ham..." -X POST http://localhost:8888/comments/Batman%3AArkham%City/create?username=LovesCoding
+curl -H "Content-Type: text/plain" -d "I spared mine. You're a dick, des" -X POST http://localhost:8888/comments/Fallout%203/create?username=CopyConstructor
+curl -H "Content-Type: text/plain" -d "I'm stuck! How do you get past the guys that reduce your speed to 0?" -X POST http://localhost:8888/comments/Hack%20%27n%27%20Slash/create?username=DontKnowLUA
+curl -H "Content-Type: text/plain" -d "Catwoman's hawt" -X POST http://localhost:8888/comments/Batman%3AArkham%City/create?username=DestructOR
+
+curl -H "Content-Type: text/plain" -d "copy, its just a game" -X POST http://localhost:8888/comments/Fallout%203/create?username=DestructOR
+curl -H "Content-Type: text/plain" -d "I hate how long it takes to backtrack out of areas.\nBatman is too cool to take so long to exit the wing of a building" -X POST http://localhost:8888/comments/Batman%3AArkham%20Asylum/create?username=IMMAGODDAABAHHMAN
+curl -H "Content-Type: text/plain" -d "I knew a guy that figured it out. I'll call him." -X POST http://localhost:8888/comments/Hack%20%27n%27%20Slash/create?username=iKnewAguythatmetLUA1nce
+curl -H "Content-Type: text/plain" -d "Besides, it was meant to be. Give me a call and I'll free up some memory for ya" -X POST http://localhost:8888/comments/Fallout%203/create?username=DestructOR
+curl -H "Content-Type: text/plain" -d "That's why Superman's a better hero" -X POST http://localhost:8888/comments/Batman%3AArkham%20Asylum/create?username=DestructOR
+
+curl -H "Content-Type: text/plain" -d "Oh man! So excited i just started playing New Vegas" -X POST http://localhost:8888/comments/Fallout%3A%20New%20Vegas/create?username=gamer%5Fduud
+curl -H "Content-Type: text/plain" -d "Hahahaha! Trololololololo!" -X POST http://localhost:8888/comments/Fallout%3A%20New%20Vegas/create?username=DestructOR
+curl -H "Content-Type: text/plain" -d "But not a better game. :O" -X POST http://localhost:8888/comments/Batman%3AArkham%Asylum/create?username=iKnewAguythatmetLUA1nce
+curl -H "Content-Type: text/plain" -d "omg there are so many bugs! The doc's face was inside out, dead creatures get stuck under the ground plan and stretch into inifinity! I was killed by a crumpling mass of human that shot down from the sky! Wht's up with this game?" -X POST http://localhost:8888/comments/Fallout%3A%20New%20Vegas/create?username=gamer%5Fduud
+curl -H "Content-Type: text/plain" -d "Batman is too busy brooding to notice./nGotham needs me!" -X POST http://localhost:8888/comments/Batman%3AArkham%City/create?username=IMMAGODDAABAHHMAN
+
+curl -H "Content-Type: text/plain" -d "It's not the game. It's you." -X POST http://localhost:8888/comments/Fallout%3A%20New%20Vegas/create?username=DestructOR
+curl -H "Content-Type: text/plain" -d "Any luck on that call, Iknewaguy?" -X POST http://localhost:8888/comments/Hack%20%27n%27%20Slash/create?username=DontKnowLUA
+curl -H "Content-Type: text/plain" -d "GET OFF CHAT DESTRUCTOR!!! >:(" -X POST http://localhost:8888/comments/Fallout%3A%20New%20Vegas/create?username=gamer%5Fduud
+
+# ERRORS
+# No username specified
+curl -H "Content-Type: text/plain" -d "ERRTEST" -X POST http://localhost:8888/comments/Fallout%3A%20New%20Vegas/create?username=
+curl -H "Content-Type: text/plain" -d "ERRTEST" -X POST http://localhost:8888/comments/Batman%3AArkham%City/create?username=
+# Game title doesn't exist
+curl -H "Content-Type: text/plain" -d "ERRTEST" -X POST http://localhost:8888/comments/ERRTEST/create?username=ERRTEST
+# Incorrect request method
+curl -H "Content-Type: text/plain" -d "ERRTEST" -X GET http://localhost:8888/comments/game/create?username=ERRTEST
+curl -H "Content-Type: text/plain" -d "ERRTEST" -X PUT http://localhost:8888/comments/game/create?username=ERRTEST
+curl -H "Content-Type: text/plain" -d "ERRTEST" -X DELETE http://localhost:8888/comments/game/create?username=ERRTEST
+
+###############################
+# GET ALL COMMENTS FOR A GAME #
+# /comments/<game name>/get   #
+###############################
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/comments/Fallout%203/get
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/comments/Fallout%3A%20New%20Vegas/get
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/comments/Batman%3AArkham%20Asylum/get
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/comments/Batman%3AArkham%City/get
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/comments/Hack%20%27n%27%20Slash/get
+
+# ERRORS
+# Game title doesn't exist
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/comments/ERRTEST/get
+# Incorrect request method
+curl -H "Content-Type: text/plain" -X PUT http://localhost:8888/comments/Fallout%203/get
+curl -H "Content-Type: text/plain" -X POST http://localhost:8888/comments/Fallout%203/get
+curl -H "Content-Type: text/plain" -X DELETE http://localhost:8888/comments/Fallout%203/get
+
+#####################################
+# UPDATE/EDIT A COMMENT             #
+# /comments/<game name>/update?id=# #
+#####################################
+curl -H "Content-Type: text/plain" -d "USER WAS BANNED FOR THIS POST" -X PUT http://localhost:8888/comments/Fallout%3A%20New%20Vegas/update?id=16
+curl -H "Content-Type: text/plain" -d "Nevermind, I figured it out :)" -X PUT http://localhost:8888/comments/Hack%20%27n%27%20Slash/update?id=17
+curl -H "Content-Type: text/plain" -d "I spared mine, because I'm a nice person that would never go out of my way to hurt others" -X PUT http://localhost:8888/comments/Fallout%203/update?id=3
+curl -H "Content-Type: text/plain" -d "I'll look up the solution on Google instead..." -X PUT http://localhost:8888/comments/Hack%20%27n%27%20Slash/update?id=8
+
+# ERRORS
+# No comment ID specified
+curl -H "Content-Type: text/plain" -d "ERRTEST" -X PUT http://localhost:8888/comments/Fallout%3A%20New%20Vegas/update?id=
+# Comment ID not a number
+curl -H "Content-Type: text/plain" -d "ERRTEST" -X PUT http://localhost:8888/comments/Fallout%203/update?id=ERRTEST
+# ID not found in specified game's comments
+curl -H "Content-Type: text/plain" -d "ERRTEST" -X PUT http://localhost:8888/comments/Fallout%203/update?id=123423432143241234
+curl -H "Content-Type: text/plain" -d "ERRTEST" -X PUT http://localhost:8888/comments/Fallout%203/update?id=-1
+# Game title doesn't exist
+curl -H "Content-Type: text/plain" -d "ERRTEST" -X PUT http://localhost:8888/comments/ERRTEST/update?id=3
+# Incorrect request method
+curl -H "Content-Type: text/plain" -d "ERRTEST" -X GET http://localhost:8888/comments/Batman%3AArkham%20Asylum/update?id=7
+curl -H "Content-Type: text/plain" -d "ERRTEST" -X POST http://localhost:8888/comments/Batman%3AArkham%20Asylum/update?id=7
+curl -H "Content-Type: text/plain" -d "ERRTEST" -X DELETE http://localhost:8888/comments/Batman%3AArkham%20Asylum/update?id=7
+
+#####################################
+# DELETE A COMMENT                  #
+# /comments/<game name>/delete?id=# #
+#####################################
+curl -H "Content-Type: text/plain" -X DELETE http://localhost:8888/comments/Hack%20%27n%27%20Slash/delete?id=8
+curl -H "Content-Type: text/plain" -X DELETE http://localhost:8888/comments/Fallout%203/delete?id=1
+curl -H "Content-Type: text/plain" -X DELETE http://localhost:8888/comments/Batman%3AArkham%City/delete?id=5
+curl -H "Content-Type: text/plain" -X DELETE http://localhost:8888/comments/Fallout%203/delete?id=6
+curl -H "Content-Type: text/plain" -X DELETE http://localhost:8888/comments/Fallout%203/delete?id=9
+curl -H "Content-Type: text/plain" -X DELETE http://localhost:8888/comments/Batman%3AArkham%20Asylum/delete?id=10
+curl -H "Content-Type: text/plain" -X DELETE http://localhost:8888/comments/Fallout%3A%20New%20Vegas/delete?id=12
+
+# ERRORS
+# No comment ID specified
+curl -H "Content-Type: text/plain" -X DELETE http://localhost:8888/comments/Batman%3AArkham%City/delete?id=
+# Comment ID not a number
+curl -H "Content-Type: text/plain" -X DELETE http://localhost:8888/comments/Batman%3AArkham%City/delete?id=ERRTEST
+# ID not found in specified game's comments
+curl -H "Content-Type: text/plain" -X DELETE http://localhost:8888/comments/Batman%3AArkham%20Asylum/delete?id=-1
+curl -H "Content-Type: text/plain" -X DELETE http://localhost:8888/comments/Fallout%203/delete?id=9
+curl -H "Content-Type: text/plain" -X DELETE http://localhost:8888/comments/Batman%3AArkham%20Asylum/delete?id=9
+# Game title doesn't exist
+curl -H "Content-Type: text/plain" -X DELETE http://localhost:8888/comments/ERRTEST/delete?id=2
+# Incorrect request method
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/comments/Batman%3AArkham%City/delete?id=2
+curl -H "Content-Type: text/plain" -X PUT http://localhost:8888/comments/Batman%3AArkham%City/delete?id=2
+curl -H "Content-Type: text/plain" -X POST http://localhost:8888/comments/Batman%3AArkham%City/delete?id=2
+
+################################################
+# SEARCH GAME METADATA                         #
+# /search?q=""&name=#&desc=#&publisher=#       #
+# /search/games?q=""&name=#&desc=#&publisher=# #
+################################################
+# No metadata filter
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=batman
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=BATMAN%20city
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=beTHesda
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=city
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=hack%20bat%20fall%20double
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=double%20sword
+# Search only titles
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=batman&name=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=BATMAN%20city&name=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=beTHesda&name=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=city&name=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=hack%20bat%20fall%20double&name=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=double%20sword&name=1
+# Search only descriptions
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=batman&desc=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=BATMAN%20city&desc=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=beTHesda&desc=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=city&desc=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=hack%20bat%20fall%20double&desc=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=double%20sword&desc=1
+# Search only publishers
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=batman&publisher=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=BATMAN%20city&publisher=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=beTHesda&publisher=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=city&publisher=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=hack%20bat%20fall%20double&publisher=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=double%20sword&publisher=1
+# search titles and descriptions
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=batman&name=1&desc=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=BATMAN%20city&name=1&desc=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=beTHesda&name=1&desc=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=city&name=1&desc=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=hack%20bat%20fall%20double&name=1&desc=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=double%20sword&name=1&desc=1
+# search titles and publishers
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=batman&name=1&publisher=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=BATMAN%20city&name=1&publisher=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=beTHesda&name=1&publisher=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=city&name=1&publisher=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=hack%20bat%20fall%20double&name=1&publisher=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=double%20sword&name=1&publisher=1
+# search descriptions and publishers
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=batman&desc=1&publisher=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=BATMAN%20city&desc=1&publisher=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=beTHesda&desc=1&publisher=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=city&desc=1&publisher=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=hack%20bat%20fall%20double&desc=1&publisher=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=double%20sword&desc=1&publisher=1
+# search for everything (same as no metadata filter)
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=batman&name=1&desc=1&publisher=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=BATMAN%20city&name=1&desc=1&publisher=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=beTHesda&name=1&desc=1&publisher=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=city&name=1&desc=1&publisher=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=hack%20bat%20fall%20double&name=1&desc=1&publisher=1
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=double%20sword&name=1&desc=1&publisher=1
+
+#ERRORS
+# Filter values aren't numbers
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=ERRTEST&name=sdfasdfasdf
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=ERRTEST&desc=asdfasdfdddd
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=ERRTEST&publisher=3fg34g
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=ERRTEST&name=vew&desc=yulh
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=ERRTEST&name=asdfsadf&publisher=asdfsdfasdf
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=ERRTEST&desc=asdfasdfsdfas&publisher=dfdfasdsadfasd
+curl -H "Content-Type: text/plain" -X GET http://localhost:8888/search?q=ERRTEST&name=asdfdf&desc=bse&publisher=fse
+# Incorrect request method
+
+curl -H "Content-Type: text/plain" -X PUT http://localhost:8888/search?q=ERRTEST
+curl -H "Content-Type: text/plain" -X POST http://localhost:8888/search?q=ERRTEST
+curl -H "Content-Type: text/plain" -X DELETE http://localhost:8888/search?q=ERRTEST
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

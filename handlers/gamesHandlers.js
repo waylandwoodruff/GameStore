@@ -19,6 +19,10 @@ gamesHandlers.create = function gamesHandlersCreate(urlData, request, response) 
         params.description += datachunk;
     });
     request.on('end', function() {
+        if (params.description === '') {
+            writeResponse(response, 400, {'Content-Type':'text/plain'}, 'No game description!');
+            return;
+        }
         gameDS.create(params, response);
     });
 };
@@ -47,6 +51,10 @@ gamesHandlers.update = function gamesHandlersUpdate(urlData, request, response) 
         params.newdescription += datachunk;
     });
     request.on('end', function() {
+        if (!params.newname && !params.newpublisher && !params.newdescription) {
+            writeResponse(response, 200, {'Content-Type':'text/plain'}, 'No update performed because no new information provided.');
+            return;
+        }
         gameDS.update(params.name, params, response);
     });
 };

@@ -45,11 +45,11 @@ commentsHandlers.remove.methods = { 'DELETE':'TRUE' };
 //  /comments/<game name>/update?id=#
 commentsHandlers.update = function commentsHandlersUpdate(urlData, request, response) {
     var params = querystring.parse(urlData.query);
-    if (!params.id) {
+    params.id = +params.id;
+    if (!params.id || typeof params.id !== 'number') {
         writeResponse(response, 400, {'Content-Type':'text/plain'}, 'Bad request');
         return;
     }
-    params.id = +params.id;
     params.newcontent = '';
     request.on('data', function(datachunk) {
         params.newcontent += datachunk;
