@@ -1,6 +1,7 @@
 'use-strict';
 
 var fs = require('fs');
+var writeResponse = require('../util/utility.js').writeResponse;
 
 var idx = 0;
 var key = null;
@@ -115,12 +116,6 @@ function initializeLocalModel() {
     }
 };
 
-function writeResponse(res, code, content, resText) {
-    res.writeHead(code, content);
-    res.write(resText);
-    res.end();
-};
-
 var game = {};
 game.create = function localGameCreate(newGame, response) {
     function task(callback) {
@@ -226,32 +221,45 @@ game.update = function localGameUpdate(gameName, updates, response) {
 };
 
 var comments = {};
-comments.create = function localCommentsCreate(game, comment) {
-    operationQueue.comments.enqueue(function() {
+comments.create = function localCommentsCreate(game, comment, response) {
+    function task(callback) {
+        var cbIsFunc = typeof callback === 'function';
         fs.readFile(datasets[1], 'utf8', function(error, data) {
             if (error) {
+                if (cbIsFunc) callback();
                 console.log(error);
+                writeResponse(response, 500, {'Content-Type':'text/plain'}, 'Could not access database!');
                 return;
             }
             var filedata = JSON.parse(data);
             if (!filedata.gameComments[game]) {
                 filedata.gameComments[game] = [];
             }
+            
             filedata.lastCommentID++;
-            comment.id = filedata.lastCommentID;
-            comment.timestamp = +((new Date()).getTime());
-            filedata.gameComments[game].push(comment);
+            filedata.gameComments[game].push({
+                'id' : filedata.lastCommentID,
+                'username' : comment.username,
+                'content' : comment.content
+            });
+            
             fs.writeFile(datasets[1], JSON.stringify(filedata), 'utf8', function(error) {
+                if (cbIsFunc) callback();
                 if (error) {
                     console.log(error);
+                    writeResponse(response, 500, {'Content-Type':'text/plain'}, 'Could not create comment!');
+                } else {
+                    writeResponse(response, 201, {'Content-Type':'text/plain'}, 'Successfully created comment.');
                 }
             });
         });
-    });
+    };
+    task.fileResource = datasets[1];
+    operationQueue.comments.enqueue(task);
 };
-comments.getByGame = function localCommentsGetByGame(game) {};
-comments.remove = function localCommentsRemove(game /* parameters? */) {};
-comments.update = function localCommentsUpdate(game, updates) {};
+comments.getByGame = function localCommentsGetByGame(game, response) {};
+comments.remove = function localCommentsRemove(game, response) {};
+comments.update = function localCommentsUpdate(game, updates, response) {};
 
 var search = {};
 

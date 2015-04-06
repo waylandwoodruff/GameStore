@@ -1,5 +1,7 @@
 'use-strict';
 
+var writeResponse = require('../util/utility.js').writeResponse;
+
 var routes = {
     '/':require('../routers/defaultRouter.js'),
     '/games':require('../routers/gamesRouter.js'),
@@ -17,9 +19,7 @@ function routeRequest(urlData, request, response) {
             routes[basepath](urlData, request, response);
         }, 0);
     } else {
-        response.writeHead(404, {'Content-Type':'text/plain'});
-        response.write('404: Not found!');
-        response.end();
+        writeResponse(response, 404, {'Content-Type':'text/plain'}, '404: Not found!');
     }
 };
 
