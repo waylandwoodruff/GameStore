@@ -20,8 +20,7 @@ commentsHandlers.create.methods = { 'POST':'TRUE' };
 
 //  /comments/<game name>/get
 commentsHandlers.get = function commentsHandlersGet(urlData, request, response) {
-    var params = querystring.parse(urlData.query);
-    commentDS.get(params, response);
+    commentDS.getByGame(urlData.gameName, response);
 };
 commentsHandlers.get.methods = { 'GET':'TRUE' };
 

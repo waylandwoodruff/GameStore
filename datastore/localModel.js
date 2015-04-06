@@ -259,7 +259,25 @@ comments.create = function localCommentsCreate(game, comment, response) {
     task.fileResource = datasets[1];
     operationQueue.comments.enqueue(task);
 };
-comments.getByGame = function localCommentsGetByGame(game, response) {};
+comments.getByGame = function localCommentsGetByGame(game, response) {
+    function task(callback) {
+        var cbIsFunc = typeof callback === 'function';
+        fs.readFile(datasets[1], 'utf8', function(error, data) {
+            if (cbIsFunc) callback();
+            if (error) {
+                console.log(error);
+                writeResponse(response, 500, {'Content-Type':'text/plain'}, 'Could not access database!');
+                return;
+            }
+            var jsonBuffer = '{"comments":';
+            var gameIdx = data.indexOf('"' + game + '":');
+            jsonBuffer += (gameIdx > 0) ? (data.slice((gameIdx + game.length + 3), (data.indexOf(']},') + 1)) + '}') : '[]}';
+            writeResponse(response, 200, {'Content-Type':'application/json'}, jsonBuffer);
+        });
+    };
+    task.fileResource = datasets[1];
+    operationQueue.comments.enqueue(task);
+};
 comments.remove = function localCommentsRemove(game, id, response) {
     function task(callback) {
         var cbIsFunc = typeof callback === 'function';
