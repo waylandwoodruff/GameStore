@@ -2,7 +2,7 @@
 
 function defaultRouter(urlData, request, response) {
     response.writeHead(200, {'Content-Type':'text/plain'});
-    response.write('Hello world!');
+    response.write('Hello!');
     response.end();
 };
 

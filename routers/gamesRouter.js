@@ -1,6 +1,6 @@
 'use-strict';
 
-var gamesHandler = require('../handlers/games.js');
+var gamesHandler = require('../handlers/gamesHandlers.js');
 var routes = {
     "/games/create" : gamesHandler.create,
     "/games/get"    : gamesHandler.get,

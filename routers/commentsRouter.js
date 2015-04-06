@@ -1,12 +1,12 @@
 'use-strict';
 
-var commentsHandler = require('../handlers/comments.js');
+var commentsHandler = require('../handlers/commentsHandlers.js');
 var writeResponse = require('../util/utility.js').writeResponse;
 
 var routes = {
     "/comments/create" : commentsHandler.create,
-    "/comments/delete" : commentsHandler.remove,
     "/comments/get"    : commentsHandler.get,
+    "/comments/delete" : commentsHandler.remove,
     "/comments/update" : commentsHandler.update
 };
 

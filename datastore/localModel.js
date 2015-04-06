@@ -109,7 +109,6 @@ for (key in semaphores) {
 function initializeLocalModel() {
     //  Synchronous for initialization only
     var fd;
-    console.log('Initializing datastore...');
     try {
         fs.mkdirSync('datastore/localData', '666');
     } catch(e) { if (e.code !== 'EEXIST') console.log(e); }
@@ -358,10 +357,75 @@ comments.update = function localCommentsUpdate(game, updates, response) {
 };
 
 var search = {};
+search.gameSearch = function localSearchRunSearch(params, response) {
+    function task(callback) {
+        var cbIsFunc = typeof callback === 'function';
+        fs.readFile(datasets[0], 'utf8', function(error, data) {
+            if (cbIsFunc) callback();
+            if (error) {
+                console.log(error);
+                writeResponse(response, 500, {'Content-Type':'text/plain'}, 'Could not access database!');
+                return;
+            }
+            var filedata = JSON.parse(data);
+            var matches = [[],[],[],[]];
+            var hits;
+            for (var game in filedata) {
+                hits = 0;
+                for (var i = 0; i < params.regexList.length; i++) {
+                    if (params.name && params.regexList[i].test(filedata[game].name)) hits += 2;
+                    if (params.desc && params.regexList[i].test(filedata[game].description)) hits += 1;
+                    if (params.publisher && params.regexList[i].test(filedata[game].publisher)) hits += 1;
+                }
+                if (hits) matches[hits-1].push(filedata[game]);
+            }
+            var results = { 'results' : matches[3].concat(matches[2], matches[1], matches[0]) };
+            writeResponse(response, 200, {'Content-Type':'application/json'}, JSON.stringify(results));
+        });
+    };
+    task.fileResource = datasets[0];
+    operationQueue.games.enqueue(task);
+};
 
 module.exports = {
     'initialize' : initializeLocalModel,
-    'game' : game,
-    'comments' : comments,
-    'search' : search
+    'game'       : game,
+    'comments'   : comments,
+    'search'     : search
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

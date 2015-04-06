@@ -9,8 +9,9 @@ var datastore = null;
 
 function initializeDatastore(deploymentMode) {
     datastore = {
+        'comments':datamodel.comments,
         'games':datamodel.game,
-        'comments':datamodel.comments
+        'search':datamodel.search
     };
 };
 

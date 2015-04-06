@@ -3,9 +3,10 @@
 var writeResponse = require('../util/utility.js').writeResponse;
 
 var routes = {
-    '/':require('../routers/defaultRouter.js'),
-    '/games':require('../routers/gamesRouter.js'),
-    '/comments':require('../routers/commentsRouter.js')
+    '/'         : require('../routers/defaultRouter.js'),
+    '/comments' : require('../routers/commentsRouter.js'),
+    '/games'    : require('../routers/gamesRouter.js'),
+    '/search'   : require('../routers/searchRouter.js')
 };
 
 function routeRequest(urlData, request, response) {

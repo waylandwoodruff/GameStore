@@ -33,6 +33,16 @@ function arrBinarySearch(collection, target) {
     return search(0, collection.length - 1);
 };
 
+function strToRegex(str) {
+    if (typeof str !== 'string') return [];
+    
+    var regList = str.split(/\s/);
+    for (var i = 0; i < regList.length; i++) {
+        regList[i] = new RegExp(regList[i], 'i');
+    }
+    return regList;
+};
+
 function writeResponse(res, code, content, resText) {
     res.writeHead(code, content);
     res.write(resText);
@@ -41,5 +51,6 @@ function writeResponse(res, code, content, resText) {
 
 module.exports = {
     'arrBinarySearch' : arrBinarySearch,
-    'writeResponse' : writeResponse
+    'strToRegex'      : strToRegex,
+    'writeResponse'   : writeResponse
 }
